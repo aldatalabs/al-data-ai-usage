@@ -1,0 +1,134 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI usage analytics</title>
+<style>
+:root{--bg:#fff;--fg:#1c1c1c;--dim:#777;--bar:#2f81f7;--track:#e8e8e8;--line:#ddd;--warn:#b45309}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1c;--fg:#e8e8e8;--dim:#999;--track:#333;--line:#333;--warn:#fbbf24}}
+body{font:14px system-ui;background:var(--bg);color:var(--fg);margin:0;display:flex}
+main{flex:1;min-width:0;max-width:860px;padding:24px}
+h1{font-size:20px;margin-top:0}h2{font-size:15px;margin:28px 0 8px}
+.bar{position:sticky;top:0;order:1;align-self:flex-start;flex:none;width:322px;height:100vh;box-sizing:border-box;overflow-y:auto;padding:24px 20px;border-left:1px solid var(--line)}
+.bar h3{font-size:12px;font-weight:500;color:var(--dim);text-transform:uppercase;margin:26px 0 10px}.bar h3:first-child{margin-top:0}
+.tags{display:flex;flex-wrap:wrap;gap:6px}.tags button{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:999px;padding:4px 12px;font-size:13px;cursor:pointer}
+.f{display:flex;flex-direction:column;gap:4px}
+button,input,select{font:inherit;color:inherit;background:var(--track);border:1px solid var(--line);border-radius:6px;padding:4px 10px}
+.f button{text-align:left;padding:7px 12px;background:none;border-color:transparent;cursor:pointer}.f button:not(.on):hover{background:var(--track)}
+button.on{background:var(--bar);color:#fff;border-color:var(--bar)}
+@media(max-width:700px){body{display:block}.bar{position:static;width:auto;height:auto;border-left:0;border-bottom:1px solid var(--line)}}
+.k{display:flex;gap:24px;flex-wrap:wrap}.k div b{display:block;font-size:22px}.k span{color:var(--dim)}
+.r{display:flex;align-items:center;gap:10px;margin:3px 0}.l{width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.b{flex:1;background:var(--track);height:10px;border-radius:5px;overflow:hidden}.b i{display:block;height:100%;background:var(--bar)}
+.v{width:64px;text-align:right;color:var(--dim)}
+table{width:100%;border-collapse:collapse}th,td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{cursor:pointer;color:var(--dim);font-weight:500}th:nth-child(-n+5),td:nth-child(-n+5){text-align:left}
+td:nth-child(3),td:nth-child(5){max-width:230px;overflow:hidden;text-overflow:ellipsis}
+code{color:var(--dim)}
+tr.s{cursor:pointer}tr.s:hover{background:var(--track)}
+.rec{border-left:3px solid var(--warn);padding:4px 12px;margin:8px 0}.ok{border-color:var(--bar)}
+.note{color:var(--dim)}
+</style>
+<aside class="bar">
+ <h3>Period</h3><div class="f" id="presets"></div>
+ <h3>Sessions</h3><div class="f" id="activity"></div>
+ <h3>Project</h3><div class="tags" id="project"></div>
+ <p class="note" id="sel"></p>
+</aside>
+<main>
+<h1>AI usage analytics</h1>
+<div class="k" id="kpi"></div>
+<h2>Recommendations</h2><div id="recs"></div>
+<h2>By day</h2><div id="days"></div>
+<h2>By project</h2><div id="projects"></div>
+<h2>By model</h2><div id="models"></div>
+<h2>Sessions <span class="note">(click a row to filter by that session; click a header to sort)</span></h2>
+<table id="sessions"></table>
+<p class="note">Source: local Claude Code logs. Tokens only, no cost. Dates are local time.</p>
+</main>
+<script>
+const DATA = __DATA__;
+const TITLES = __TITLES__;
+const $ = id => document.getElementById(id);
+const fmt = n => n>=1e9?(n/1e9).toFixed(1)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n));
+const tot = r => r.in+r.out+r.cw+r.cr;
+const name = id => TITLES[id] || 'Untitled';
+const esc = s => s.replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const iso = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const ACTIVE_MIN = 60;   // a session is active if its last reply is no older than this
+const state = {from:'', to:'', project:'', session:'', activity:'all', sort:'tokens', desc:true};
+const days = [...new Set(DATA.map(r=>r.d))].sort();
+const lastDay = days[days.length-1] || iso(new Date());
+const back = n => { const d = new Date(lastDay+'T00:00:00'); d.setDate(d.getDate()-n+1); return iso(d); };
+
+function group(rows, key){
+  const m = new Map();
+  for (const r of rows){
+    const k = key(r); let g = m.get(k);
+    if(!g){ g={k,in:0,out:0,cw:0,cr:0,n:0,first:r.d,last:r.d,p:r.p,models:{}}; m.set(k,g); }
+    g.t=Math.max(g.t||0,r.t||0);
+    g.in+=r.in; g.out+=r.out; g.cw+=r.cw; g.cr+=r.cr; g.n+=r.n;
+    if(r.d<g.first) g.first=r.d; if(r.d>g.last) g.last=r.d;
+    g.models[r.m]=(g.models[r.m]||0)+tot(r);
+  }
+  return [...m.values()];
+}
+function bars(el, groups, top, ordered){
+  const rows = (ordered ? groups : groups.sort((a,b)=>tot(b)-tot(a))).slice(0,top);
+  const peak = Math.max(1,...rows.map(tot));
+  el.innerHTML = rows.map(g=>`<div class="r"><span class="l" title="${esc(g.k)}">${esc(g.k)}</span>`+
+    `<span class="b"><i style="width:${Math.max(1,tot(g)/peak*100).toFixed(1)}%"></i></span><span class="v">${fmt(tot(g))}</span></div>`).join('')
+    || '<span class="note">No data</span>';
+}
+function recommend(rows, sessions){
+  const out = [], all = group(rows, ()=>'all')[0];
+  if(!all){ return ['<div class="rec ok">No activity in this range.</div>']; }
+  const total = tot(all), input = all.in+all.cw+all.cr;
+  const hit = input ? all.cr/input : 1;
+  if(input>1e6 && hit<0.8) out.push(`Cache hit rate is ${(hit*100).toFixed(0)}% (healthy is 85%+). Long idle gaps and frequent context changes make the prompt cache expire — keep working in one session instead of restarting.`);
+  const opus = Object.entries(all.models).filter(([m])=>/opus/i.test(m)).reduce((a,[,v])=>a+v,0);
+  if(total && opus/total>0.7) out.push(`${(opus/total*100).toFixed(0)}% of tokens went to Opus models. Routine edits, search and boilerplate usually run fine on Sonnet — switch with /model and keep Opus for hard design and debugging.`);
+  const big = sessions.slice().sort((a,b)=>tot(b)-tot(a))[0];
+  if(big && sessions.length>1 && tot(big)/total>0.4) out.push(`One session ("${esc(name(big.k))}", ${big.first}) used ${(tot(big)/total*100).toFixed(0)}% of all tokens. Split long work with /clear between unrelated tasks.`);
+  const heavy = sessions.filter(s=>s.n>=30 && s.cr/s.n>150000).sort((a,b)=>b.cr/b.n-a.cr/a.n)[0];
+  if(heavy) out.push(`Session "${esc(name(heavy.k))}" (${heavy.first}) re-reads about ${fmt(heavy.cr/heavy.n)} cached tokens on every message. Run /compact when a conversation gets that heavy.`);
+  const outShare = total ? all.out/total : 0;
+  if(total>1e6 && outShare<0.002) out.push(`Output is only ${(outShare*100).toFixed(2)}% of tokens: almost all volume is context being re-read. Shorter sessions and a leaner CLAUDE.md reduce it the most.`);
+  return out.length ? out.map(t=>`<div class="rec">${t}</div>`) : ['<div class="rec ok">Nothing stands out — usage in this range looks healthy.</div>'];
+}
+function render(){
+  const live = new Set(group(DATA, r=>r.s).filter(s=>Date.now()/1000-s.t < ACTIVE_MIN*60).map(s=>s.k));
+  const rows = DATA.filter(r=>(!state.from||r.d>=state.from)&&(!state.to||r.d<=state.to)&&(!state.project||r.p===state.project)
+    &&(state.activity==='all'||(state.activity==='active')===live.has(r.s)));
+  const sessions = group(rows, r=>r.s);
+  document.querySelectorAll('#activity button').forEach(b=>b.classList.toggle('on', b.dataset.a===state.activity));
+  document.querySelectorAll('#project button').forEach(b=>b.classList.toggle('on', b.dataset.p===state.project));
+  const shown = state.session ? rows.filter(r=>r.s===state.session) : rows;
+  const all = group(shown, ()=>'all')[0] || {in:0,out:0,cw:0,cr:0,n:0};
+  $('kpi').innerHTML = [[fmt(tot(all)),'tokens total'],[fmt(all.out),'output'],[fmt(all.cr),'cache reads'],
+    [new Set(shown.map(r=>r.d)).size,'active days'],[state.session?1:sessions.length,'sessions']]
+    .map(([v,l])=>`<div><b>${v}</b><span>${l}</span></div>`).join('');
+  $('sel').innerHTML = state.session ? `Session “${esc(name(state.session))}” <code>${esc(state.session.slice(0,8))}</code> <button id="clr">clear</button>` : '';
+  if(state.session) $('clr').onclick = ()=>{state.session='';render();};
+  $('recs').innerHTML = recommend(shown, group(shown, r=>r.s)).join('');
+  bars($('days'), group(shown, r=>r.d).sort((a,b)=>b.k<a.k?-1:1), 45, true);
+  bars($('projects'), group(shown, r=>r.p), 12);
+  bars($('models'), group(shown, r=>r.m), 12);
+  const val = {tokens:tot, out:s=>s.out, msgs:s=>s.n, date:s=>s.last, project:s=>s.p, status:s=>live.has(s.k)?1:0, title:s=>name(s.k).toLowerCase(), id:s=>s.k};
+  const list = sessions.sort((a,b)=>{const x=val[state.sort](a), y=val[state.sort](b); return (x<y?-1:x>y?1:0)*(state.desc?-1:1);}).slice(0,200);
+  const head = [['date','Last active'],['status','Status'],['title','Session'],['id','ID'],['project','Project'],['msgs','Msgs'],['out','Output'],['tokens','Tokens']]
+    .map(([k,l])=>`<th data-k="${k}">${l}${state.sort===k?(state.desc?' ▾':' ▴'):''}</th>`).join('');
+  $('sessions').innerHTML = `<tr>${head}</tr>`+list.map(s=>`<tr class="s" data-s="${esc(s.k)}"><td>${s.last}</td><td>${live.has(s.k)?'active':'idle'}</td><td title="${esc(name(s.k))}">${esc(name(s.k))}</td><td><code title="${esc(s.k)}">${esc(s.k.slice(0,8))}</code></td><td>${esc(s.p)}</td><td>${s.n}</td><td>${fmt(s.out)}</td><td>${fmt(tot(s))}</td></tr>`).join('');
+  document.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k; state.desc = state.sort===k ? !state.desc : true; state.sort=k; render();});
+  document.querySelectorAll('tr.s').forEach(tr=>tr.onclick=()=>{state.session=tr.dataset.s; render(); scrollTo(0,0);});
+  document.querySelectorAll('#presets button').forEach(b=>b.classList.toggle('on', b.dataset.f===state.from && b.dataset.t===state.to));
+}
+const presets = [['Today',lastDay,lastDay],['7 days',back(7),''],['30 days',back(30),''],['90 days','','']];
+$('presets').innerHTML = presets.map(([l,f,t])=>`<button data-f="${f}" data-t="${t}">${l}</button>`).join('');
+document.querySelectorAll('#presets button').forEach(b=>b.onclick=()=>{state.from=b.dataset.f;state.to=b.dataset.t;state.session='';render();});
+$('activity').innerHTML = [['all','All sessions'],['active','Active'],['idle','Inactive']]
+  .map(([a,l])=>`<button data-a="${a}">${l}</button>`).join('');
+document.querySelectorAll('#activity button').forEach(b=>b.onclick=()=>{state.activity=b.dataset.a;state.session='';render();});
+const projects = group(DATA, r=>r.p).sort((a,b)=>tot(b)-tot(a)).map(g=>g.k);
+$('project').innerHTML = '<button data-p="">All</button>'+projects.map(p=>`<button data-p="${esc(p)}" title="${esc(p)}">${esc(p)}</button>`).join('');
+document.querySelectorAll('#project button').forEach(b=>b.onclick=()=>{state.project = state.project===b.dataset.p ? '' : b.dataset.p;state.session='';render();});
+state.from = back(30);
+render();
+</script>

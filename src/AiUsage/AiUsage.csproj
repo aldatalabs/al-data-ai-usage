@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- The SDK version brings the Windows Runtime projection, for the Store's update API alone.
+         It matches MinVersion in tools/msix/AppxManifest.xml. -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- Only for the tray icon (NotifyIcon); everything else is WPF. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- Off: WPF and WinForms share type names (Application, Color, Point). -->
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- LibraryImport generates the P/Invoke marshalling as unsafe code. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- A WinForms analyzer: DPI awareness lives in app.manifest because this is a WPF app. -->
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+    <AssemblyName>al-data-ai-usage</AssemblyName>
+    <RootNamespace>AlData.AiUsage</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <!-- The widget translates itself; the framework's own message translations only add weight. -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <VersionPrefix>1.0.1</VersionPrefix>
+    <VersionSuffix>dev</VersionSuffix>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <Product>AI Usage Monitor for Claude &amp; Codex</Product>
+    <Company>AL Data Labs</Company>
+    <Copyright>MIT</Copyright>
+  </PropertyGroup>
+
+  <!-- What the user picks from is plain JSON at the repo root: a new language or palette is a file. -->
+  <ItemGroup>
+    <Content Include="..\..\locales\*.json" Link="locales\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\palettes\*.json" Link="palettes\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\config.default.json" Link="config.default.json" CopyToOutputDirectory="PreserveNewest" />
+    <EmbeddedResource Include="Core\Report.html" LogicalName="Report.html" />
+  </ItemGroup>
+
+</Project>

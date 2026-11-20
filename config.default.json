@@ -1,0 +1,81 @@
+{
+  "layout": "rainbow",
+  "language": "system",
+  "palette": "dark",
+  "icons": 5,
+  "lines": "auto",
+  "shuffle_minutes": 0,
+  "scale": 1.0,
+  "refresh_seconds": 600,
+  "topmost": true,
+  "locked": false,
+  "transparent": false,
+  "show_reset": true,
+  "show_pace": true,
+  "color_mode": "pace",
+  "position": {
+    "x": null,
+    "y": null
+  },
+  "theme": {
+    "bg": "#202020",
+    "track": "#3e3e3e",
+    "text": "#e8e8e8",
+    "dim": "#969696",
+    "levels": [
+      [
+        50,
+        "#4ade80"
+      ],
+      [
+        75,
+        "#fbbf24"
+      ],
+      [
+        90,
+        "#fb923c"
+      ],
+      [
+        101,
+        "#f87171"
+      ]
+    ],
+    "pace_levels": [
+      [
+        90,
+        "#4ade80"
+      ],
+      [
+        100,
+        "#fbbf24"
+      ],
+      [
+        115,
+        "#fb923c"
+      ],
+      [
+        10000,
+        "#f87171"
+      ]
+    ]
+  },
+  "toasts": {
+    "enabled": true,
+    "thresholds": [
+      50,
+      75,
+      90
+    ]
+  },
+  "tray": {
+    "enabled": true
+  },
+  "providers": {
+    "claude_usage": {
+      "enabled": true
+    },
+    "codex_usage": {
+      "enabled": true
+    }
+  }
+}

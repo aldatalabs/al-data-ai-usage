@@ -1,0 +1,29 @@
+name: Report a bug
+description: Something the widget does wrong
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The number beside Exit in the right-click menu. The Feedback menu fills it in.
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Windows build, Store app or a build from source, skin, language. The Feedback menu fills it in.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you saw, what you expected. A screenshot helps.
+    validations:
+      required: true
+  - type: textarea
+    id: errors
+    attributes:
+      label: Errors in the menu
+      description: The grey lines above Exit, if there are any. Never paste a token or the contents of .credentials.json.

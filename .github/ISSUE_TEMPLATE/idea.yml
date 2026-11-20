@@ -1,0 +1,16 @@
+name: Suggest an idea
+description: A source, a skin, a setting, anything the widget could do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      description: What you would like, and what it would help you with.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The number beside Exit in the right-click menu. The Feedback menu fills it in.

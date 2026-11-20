@@ -1,0 +1,10 @@
+{
+  "_comment": "MSIX identity, from Partner Center > Product identity (Store ID 9N5VRJ8TLQ46). display_name must be one of the names reserved for the product under Manage app names.",
+  "identity": "ALDataLabs.AIUsageLimits",
+  "publisher": "CN=29223181-2CEA-413A-BEB8-F63E402D61B9",
+  "publisher_display": "AL Data Labs",
+  "display_name": "AI Usage Monitor for Claude & Codex",
+  "description": "A small always-on-top gauge of your Claude and Codex usage limits.",
+  "executable": "al-data-ai-usage.exe",
+  "arch": "x64"
+}

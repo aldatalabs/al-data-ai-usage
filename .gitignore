@@ -1,0 +1,13 @@
+CLAUDE.local.md
+.vscode/
+.idea/
+*.log
+.claude/settings.local.json
+.claude/worktrees/
+build/
+dist/
+.playwright-mcp/
+
+# .NET build output
+bin/
+obj/
