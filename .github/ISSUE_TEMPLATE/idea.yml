@@ -13,4 +13,4 @@ body:
     id: version
     attributes:
       label: Version
-      description: The number beside Exit in the right-click menu. The Feedback menu fills it in.
+      description: The number beside Exit in the right-click menu.

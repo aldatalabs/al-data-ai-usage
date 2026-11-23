@@ -85,6 +85,9 @@
   "menu.feedback": "Geri bildirim",
   "feedback.bug": "Hata bildir",
   "feedback.idea": "Fikir öner",
+  "feedback.email": "E-posta yaz",
+  "feedback.email_copied": "Adres kopyalandı: {address}",
+  "feedback.github": "GitHub'da sorunlar",
   "feedback.rate": "Store'da değerlendir",
   "feedback.store": "Microsoft Store sayfası",
   "feedback.source": "GitHub'da kaynak kod"
