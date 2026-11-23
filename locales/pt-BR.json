@@ -85,6 +85,9 @@
   "menu.feedback": "Feedback",
   "feedback.bug": "Relatar um bug",
   "feedback.idea": "Sugerir uma ideia",
+  "feedback.email": "Escrever por e-mail",
+  "feedback.email_copied": "Endereço copiado: {address}",
+  "feedback.github": "Issues no GitHub",
   "feedback.rate": "Avaliar na Store",
   "feedback.store": "Página na Microsoft Store",
   "feedback.source": "Código-fonte no GitHub"

@@ -85,6 +85,9 @@
   "menu.feedback": "Зворотний зв'язок",
   "feedback.bug": "Повідомити про помилку",
   "feedback.idea": "Запропонувати ідею",
+  "feedback.email": "Написати листа",
+  "feedback.email_copied": "Адресу скопійовано: {address}",
+  "feedback.github": "Issues на GitHub",
   "feedback.rate": "Оцінити в Store",
   "feedback.store": "Сторінка в Microsoft Store",
   "feedback.source": "Код на GitHub"

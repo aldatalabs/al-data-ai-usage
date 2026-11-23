@@ -7,8 +7,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), ver
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-23
+
 ### Changed
 
+- **Feedback without an account**: Report a bug and Suggest an idea open the feedback form on
+  aldatalabs.com instead of the issue form on GitHub; the version and the environment travel in
+  the link and are shown before sending. New Send an email copies support@aldatalabs.com to
+  the clipboard and opens the mail program. GitHub is one entry now, Issues on GitHub. The
+  widget itself still sends nothing; PRIVACY.md describes the three ways.
 - **README**: the app is in the Microsoft Store now; added the Store link and the winget
   commands, by name and by Store ID.
 

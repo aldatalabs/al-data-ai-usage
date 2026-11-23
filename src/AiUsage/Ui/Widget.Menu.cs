@@ -20,6 +20,9 @@ public sealed partial class Widget
     static readonly TimeSpan ShuffleEvery = TimeSpan.FromMinutes(1);
     const string UsageUrl = "https://claude.ai/settings/usage";
     const string RepoUrl = "https://github.com/aldatalabs/al-data-ai-usage";
+    /// <summary>The feedback form on the site; the address is permanent once a build ships with it.</summary>
+    const string FeedbackPage = "https://aldatalabs.com/ai-usage-monitor/feedback";
+    const string SupportEmail = "support@aldatalabs.com";
     /// <summary>The product page in the Store app, by the Store ID from Partner Center; a build
     /// from source has no package family to name it by.</summary>
     const string StoreUrl = "ms-windows-store://pdp/?ProductId=9N5VRJ8TLQ46";
@@ -134,10 +137,15 @@ public sealed partial class Widget
             root.AddCommand(T("menu.check_updates"), CheckUpdates, icon: Icons.CheckUpdates);
 
         var feedback = root.AddSubmenu(T("menu.feedback"), Icons.Feedback);
-        feedback.AddCommand(T("feedback.bug"), () => Shell.Open(IssueUrl("bug")), icon: Icons.Bug);
-        feedback.AddCommand(T("feedback.idea"), () => Shell.Open(IssueUrl("idea")), icon: Icons.Idea);
+        // No account needed in the first group; a Microsoft or a GitHub one in the second; plain links in the third.
+        feedback.AddCommand(T("feedback.bug"), () => Shell.Open(FeedbackUrl("bug")), icon: Icons.Bug);
+        feedback.AddCommand(T("feedback.idea"), () => Shell.Open(FeedbackUrl("idea")), icon: Icons.Idea);
+        feedback.AddCommand(T("feedback.email"), WriteEmail, icon: Icons.Mail);
+        feedback.AddSeparator();
         if (Startup.PackageFamily() is { } family)
             feedback.AddCommand(T("feedback.rate"), () => Shell.Open($"ms-windows-store://review/?PFN={family}"), icon: Icons.Rate);
+        feedback.AddCommand(T("feedback.github"), () => Shell.Open($"{RepoUrl}/issues"), icon: Icons.Link);
+        feedback.AddSeparator();
         feedback.AddCommand(T("feedback.store"), () => Shell.Open(StoreUrl), icon: Icons.Store);
         feedback.AddCommand(T("feedback.source"), () => Shell.Open(RepoUrl), icon: Icons.Source);
 
@@ -154,14 +162,45 @@ public sealed partial class Widget
         return root;
     }
 
-    /// <summary>The issue form with what every report starts with already filled in: the version
-    /// and where the widget runs. The browser sends it once the user submits; the widget sends nothing.</summary>
-    string IssueUrl(string template)
+    /// <summary>What every report starts with: the version and where the widget runs.</summary>
+    string EnvironmentLine() =>
+        $"Windows {Environment.OSVersion.Version}, {(Startup.Packaged ? "Store app" : "build from source")}, "
+        + $"skin {cfg.Str("layout", "rows")}, language {i18n.Language}";
+
+    /// <summary>The feedback form on the site, which needs no account, with the version and the
+    /// environment already filled in. They travel in the fragment, which the browser keeps to
+    /// itself: nothing reaches anyone until the user presses Send, and the widget sends nothing.</summary>
+    string FeedbackUrl(string type) =>
+        $"{FeedbackPage}#type={type}&version={Uri.EscapeDataString(AppInfo.Version)}"
+        + $"&environment={Uri.EscapeDataString(EnvironmentLine())}";
+
+    /// <summary>The address goes to the clipboard first: a machine without a mail program opens
+    /// nothing for mailto, and the toast still tells the user where to write. When another
+    /// program holds the clipboard, the toast shows the bare address instead.</summary>
+    void WriteEmail()
     {
-        var environment = $"Windows {Environment.OSVersion.Version}, {(Startup.Packaged ? "Store app" : "build from source")}, "
-                        + $"skin {cfg.Str("layout", "rows")}, language {i18n.Language}";
-        return $"{RepoUrl}/issues/new?template={template}.yml"
-             + $"&version={Uri.EscapeDataString(AppInfo.Version)}&environment={Uri.EscapeDataString(environment)}";
+        var copied = false;
+        try
+        {
+            System.Windows.Clipboard.SetText(SupportEmail);
+            copied = true;
+        }
+        catch (Exception e)
+        {
+            System.Diagnostics.Trace.WriteLine(e);
+        }
+        Notice(copied ? i18n.T("feedback.email_copied", ("address", SupportEmail)) : SupportEmail, ok: true);
+        try
+        {
+            // A mailto body breaks its lines with CRLF (RFC 6068).
+            var subject = $"AI Usage Monitor {AppInfo.Version}";
+            var body = $"\r\n\r\n--\r\nVersion {AppInfo.Version}\r\n{EnvironmentLine()}";
+            Shell.Open($"mailto:{SupportEmail}?subject={Uri.EscapeDataString(subject)}&body={Uri.EscapeDataString(body)}");
+        }
+        catch (Exception e)
+        {
+            System.Diagnostics.Trace.WriteLine(e);
+        }
     }
 
     /// <summary>What the provider says about the plan and account, e.g. "max · name@company.com".</summary>
