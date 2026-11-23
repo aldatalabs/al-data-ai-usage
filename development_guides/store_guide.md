@@ -125,7 +125,7 @@ on the spot, and the Store's dialog installs the update and restarts the widget.
 
 ```bash
 dotnet run tools/build_msix.cs        # after raising VersionPrefix in the csproj
-msstore publish --inputFile dist/al-data-ai-usage-X.Y.Z-x64.msix --appId 9N5VRJ8TLQ46
+msstore publish dist/al-data-ai-usage-X.Y.Z-x64.msix --appId 9N5VRJ8TLQ46
 ```
 
 `msstore` needs an Entra ID tenant linked to Partner Center and `msstore reconfigure` with
