@@ -85,6 +85,9 @@
   "menu.feedback": "Feedback",
   "feedback.bug": "Bug melden",
   "feedback.idea": "Idee voorstellen",
+  "feedback.email": "E-mail sturen",
+  "feedback.email_copied": "Adres gekopieerd: {address}",
+  "feedback.github": "Issues op GitHub",
   "feedback.rate": "Beoordelen in de Store",
   "feedback.store": "Pagina in de Microsoft Store",
   "feedback.source": "Broncode op GitHub"

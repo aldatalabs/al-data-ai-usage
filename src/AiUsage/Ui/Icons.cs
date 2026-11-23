@@ -25,6 +25,7 @@ internal static class Icons
         Toasts = "", Analytics = "", Report = "", Hide = "", Show = "",
         Autostart = "", Exit = "", CheckUpdates = "",
         Transparent = "",
+        Mail = "", Link = "",
         Feedback = "", Bug = "", Idea = "", Rate = "", Source = "", Store = "";
 }
 

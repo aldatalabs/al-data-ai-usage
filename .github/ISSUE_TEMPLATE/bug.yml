@@ -6,7 +6,7 @@ body:
     id: version
     attributes:
       label: Version
-      description: The number beside Exit in the right-click menu. The Feedback menu fills it in.
+      description: The number beside Exit in the right-click menu.
       placeholder: 1.0.0
     validations:
       required: true
@@ -14,7 +14,7 @@ body:
     id: environment
     attributes:
       label: Environment
-      description: Windows build, Store app or a build from source, skin, language. The Feedback menu fills it in.
+      description: Windows build, Store app or a build from source, skin, language.
   - type: textarea
     id: what
     attributes:
