@@ -41,4 +41,5 @@ jobs:
         run: |
           msstore reconfigure --tenantId "${{ secrets.PARTNER_CENTER_TENANT_ID }}" --sellerId "${{ secrets.PARTNER_CENTER_SELLER_ID }}" --clientId "${{ secrets.PARTNER_CENTER_CLIENT_ID }}" --clientSecret "${{ secrets.PARTNER_CENTER_CLIENT_SECRET }}"
           $msix = (Get-ChildItem dist/*.msix).FullName
-          msstore publish --inputFile $msix --appId "${{ secrets.PARTNER_CENTER_APP_ID }}"
+          # The package itself is the path: the CLI has no option for a loose file.
+          msstore publish $msix --appId "${{ secrets.PARTNER_CENTER_APP_ID }}"
