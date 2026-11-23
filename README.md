@@ -3,8 +3,8 @@
 A desktop widget for Windows 11: fill bars for your AI usage limits, always on
 top, sitting in the free space of the taskbar. Supports Claude Code and Codex CLI.
 
-Installed from the Microsoft Store (coming soon), which also keeps it up to
-date, or built from source with the .NET 10 SDK. No admin rights either way.
+Installed from the Microsoft Store, which also keeps it up to date, or built
+from source with the .NET 10 SDK. No admin rights either way.
 
 > **Unofficial.** This project is not affiliated with, endorsed by, or supported
 > by Anthropic or OpenAI. It relies on an undocumented Claude endpoint and on
@@ -16,6 +16,19 @@ date, or built from source with the .NET 10 SDK. No admin rights either way.
 - Windows 10 (2004 or later) or Windows 11
 - Claude Code, already signed in (the widget reads its token); Codex CLI is optional
 - To build from source: the [.NET 10 SDK](https://dotnet.microsoft.com/download)
+
+## Installing
+
+From the Microsoft Store:
+[AI Usage Monitor for Claude & Codex](https://apps.microsoft.com/detail/9N5VRJ8TLQ46).
+
+Or with winget, by name or by the Store ID, which stays the same if the app is
+ever renamed:
+
+```
+winget install --name "AI Usage Monitor for Claude & Codex" --exact -s msstore
+winget install 9N5VRJ8TLQ46 -s msstore
+```
 
 ## Building from source
 

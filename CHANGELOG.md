@@ -7,6 +7,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), ver
 
 ## [Unreleased]
 
+### Changed
+
+- **README**: the app is in the Microsoft Store now; added the Store link and the winget
+  commands, by name and by Store ID.
+
 ## [1.0.1] - 2026-11-20
 
 ### Added
