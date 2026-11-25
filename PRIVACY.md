@@ -1,6 +1,6 @@
 # Privacy Policy
 
-AI Usage Monitor for Claude & Codex (`al-data-ai-usage`) runs entirely on your computer.
+AI Usage Limits (`al-data-ai-usage`) runs entirely on your computer.
 
 ## What it reads
 

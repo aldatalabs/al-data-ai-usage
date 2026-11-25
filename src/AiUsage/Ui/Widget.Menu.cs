@@ -193,7 +193,7 @@ public sealed partial class Widget
         try
         {
             // A mailto body breaks its lines with CRLF (RFC 6068).
-            var subject = $"AI Usage Monitor {AppInfo.Version}";
+            var subject = $"AI Usage Limits {AppInfo.Version}";
             var body = $"\r\n\r\n--\r\nVersion {AppInfo.Version}\r\n{EnvironmentLine()}";
             Shell.Open($"mailto:{SupportEmail}?subject={Uri.EscapeDataString(subject)}&body={Uri.EscapeDataString(body)}");
         }

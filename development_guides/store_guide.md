@@ -75,12 +75,14 @@ Remove with `Get-AppxPackage *AIUsage* | Remove-AppxPackage`.
    Microsoft verifies the business document and a paid domain-registration invoice for
    `aldatalabs.com`. Done: verified 2026-11-19.
 2. Partner Center > Apps and games > New product > MSIX or PWA app. Reserve the name. The name
-   must not begin with a third-party mark: "AI Usage Monitor for Claude & Codex", not "Claude
-   Usage Monitor". Done: the product is Store ID `9N5VRJ8TLQ46`, with four names reserved
-   (Manage app names): AI Usage Monitor for Claude & Codex, AI Usage Limits, AI Usage Pro,
-   AI Usage Limits Pro. The package ships the first; when a third source joins, an update
-   switches `display_name` to AI Usage Limits, and the identity stays. A reservation lapses
-   unless the product is submitted within three months (by 2027-02-19).
+   must not contain the name of another product at all, not even after "for": 1.0.1 was
+   certified as "AI Usage Monitor for Claude & Codex", and 1.0.2 failed under policy 10.1.1.1
+   (Inaccurate Representation) for that same name. Done: the product is Store ID
+   `9N5VRJ8TLQ46`, with four names reserved (Manage app names): AI Usage Limits, AI Usage Pro,
+   AI Usage Limits Pro, AI Usage Monitor for Claude & Codex. The package ships **AI Usage
+   Limits** since 1.0.3; the identity never changed. The sources belong in the description
+   and the search terms, not in the name. The name in `display_name` and the Product name of
+   the Store listing must be the same reserved name.
 3. Product identity page: copy **Package/Identity/Name**, **Package/Identity/Publisher** and
    **Package/Properties/PublisherDisplayName** into `tools/msix/package.json`. Rebuild. Done.
 4. Submission: upload the `.msix`, fill properties, age ratings, listing (screenshots, the
@@ -91,7 +93,7 @@ The Store CLI cannot do this step; it only updates a published app.
 
 ### Listing text (ready to paste)
 
-- **Name:** AI Usage Monitor for Claude & Codex
+- **Name:** AI Usage Limits
 - **Short description:** A tiny always-on-top gauge of your Claude and Codex usage limits.
 - **Description:**
 
@@ -134,6 +136,14 @@ every `v*` tag: it sets up .NET 10, builds the package, uploads it as a workflow
 repository has the secrets `PARTNER_CENTER_TENANT_ID`, `PARTNER_CENTER_SELLER_ID`,
 `PARTNER_CENTER_CLIENT_ID`, `PARTNER_CENTER_CLIENT_SECRET` and `PARTNER_CENTER_APP_ID`,
 submits it. Without the secrets the publish step is skipped and the build still runs.
+
+A tag carries a new package and nothing else. `msstore publish` deletes whatever draft the
+product has and opens a new submission from the last published one, so a listing change
+(the name, the description, screenshots) made in Partner Center does not survive it, and
+neither does a draft that failed certification. Such a release goes by hand: run the workflow
+from the release branch (Actions > msix > Run workflow; a manual run builds and does not
+publish), put the artifact and the listing change into the draft in Partner Center, resubmit,
+and push the tag with the workflow switched off (`gh workflow disable msix`, then `enable`).
 
 ## Runtime differences in a package
 
