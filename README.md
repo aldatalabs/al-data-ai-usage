@@ -20,13 +20,13 @@ from source with the .NET 10 SDK. No admin rights either way.
 ## Installing
 
 From the Microsoft Store:
-[AI Usage Monitor for Claude & Codex](https://apps.microsoft.com/detail/9N5VRJ8TLQ46).
+[AI Usage Limits](https://apps.microsoft.com/detail/9N5VRJ8TLQ46).
 
 Or with winget, by name or by the Store ID, which stays the same if the app is
 ever renamed:
 
 ```
-winget install --name "AI Usage Monitor for Claude & Codex" --exact -s msstore
+winget install --name "AI Usage Limits" --exact -s msstore
 winget install 9N5VRJ8TLQ46 -s msstore
 ```
 

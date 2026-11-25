@@ -21,10 +21,10 @@
     <ApplicationIcon>app.ico</ApplicationIcon>
     <!-- The widget translates itself; the framework's own message translations only add weight. -->
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <VersionPrefix>1.0.2</VersionPrefix>
+    <VersionPrefix>1.0.3</VersionPrefix>
     <VersionSuffix>dev</VersionSuffix>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-    <Product>AI Usage Monitor for Claude &amp; Codex</Product>
+    <Product>AI Usage Limits</Product>
     <Company>AL Data Labs</Company>
     <Copyright>MIT</Copyright>
   </PropertyGroup>

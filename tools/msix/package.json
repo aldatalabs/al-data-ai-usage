@@ -3,7 +3,7 @@
   "identity": "ALDataLabs.AIUsageLimits",
   "publisher": "CN=29223181-2CEA-413A-BEB8-F63E402D61B9",
   "publisher_display": "AL Data Labs",
-  "display_name": "AI Usage Monitor for Claude & Codex",
+  "display_name": "AI Usage Limits",
   "description": "A small always-on-top gauge of your Claude and Codex usage limits.",
   "executable": "al-data-ai-usage.exe",
   "arch": "x64"
