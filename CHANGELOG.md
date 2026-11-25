@@ -7,6 +7,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), ver
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-11-25
+
 ### Changed
 
 - **Name**: the app is "AI Usage Limits" now, in the Store, in the Start menu and in the
